@@ -24,16 +24,16 @@ namespace CompanyEmployees.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        public IEnumerable<string> Get()
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray();
+            _logger.LogInformation("Вот информационное сообщение от нашего контроллера значений.");
+           
+            _logger.LogDebug("Вот отладочное сообщение от нашего контроллера значений.");
+           
+            _logger.LogWarning("Вот сообщение предупреждения от нашего контроллера значений.");
+           
+            _logger.LogError("Вот сообщение об ошибке от нашего контроллера значений.");
+            return new string[] { "value1", "value2" };
         }
     }
 }
