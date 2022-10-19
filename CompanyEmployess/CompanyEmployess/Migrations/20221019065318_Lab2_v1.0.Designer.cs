@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CompanyEmployess.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20220928085601_InitialData")]
-    partial class InitialData
+    [Migration("20221019065318_Lab2_v1.0")]
+    partial class Lab2_v10
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,6 +20,48 @@ namespace CompanyEmployess.Migrations
                 .HasAnnotation("ProductVersion", "3.1.29")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("Entities.Models.Client", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("ClientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(30)")
+                        .HasMaxLength(30);
+
+                    b.Property<string>("Number_Client")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Clients");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("1e4940c3-15d8-4d89-9e30-7ffdd739514b"),
+                            Address = "Саранск,ул. Гожувская улица, 10",
+                            Name = "Иван Иванов",
+                            Number_Client = "79542156475"
+                        },
+                        new
+                        {
+                            Id = new Guid("9ef303aa-1e51-43e7-8c4c-8501ba1e26ea"),
+                            Address = "Саранск, ул. Богдана Хмельницкого, 28",
+                            Name = "Пётр Петров",
+                            Number_Client = "79378589546"
+                        });
+                });
 
             modelBuilder.Entity("Entities.Models.Company", b =>
                 {
@@ -115,6 +157,48 @@ namespace CompanyEmployess.Migrations
                             CompanyId = new Guid("3d490a70-94ce-4d15-9494-5248280c2ce3"),
                             Name = "Kane Miller",
                             Position = "Administrator"
+                        });
+                });
+
+            modelBuilder.Entity("Entities.Models.Product", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(30)")
+                        .HasMaxLength(30);
+
+                    b.Property<string>("Price")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Product_desciption")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Products");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("ad8bcc21-5cda-4dd0-9789-668a4512c8ea"),
+                            Name = "Тарфиф Безлимит",
+                            Price = "590",
+                            Product_desciption = "Безлимитный интернет, 500 минут, 200 SMS"
+                        },
+                        new
+                        {
+                            Id = new Guid("4d889d8a-3baf-428a-9f12-aa0a3e1a2368"),
+                            Name = "Пётр Петров",
+                            Price = "890",
+                            Product_desciption = "Безлимитный интернет с раздачей, 650 минут, 200 SMS"
                         });
                 });
 

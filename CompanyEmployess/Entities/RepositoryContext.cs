@@ -17,9 +17,13 @@ namespace Entities
         {
             modelBuilder.ApplyConfiguration(new CompanyConfiguration());
             modelBuilder.ApplyConfiguration(new EmployeeConfiguration());
+            modelBuilder.ApplyConfiguration(new ClientConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductConfiguration());
         }
 
         public DbSet<Company> Companies { get; set; }
         public DbSet<Employee> Employees { get; set; }
+        public DbSet<Client> Clients { get; set; }
+        public DbSet<Product> Products { get; set; }
     }
 }
