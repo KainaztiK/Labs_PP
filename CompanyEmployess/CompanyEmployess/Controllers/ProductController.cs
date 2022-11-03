@@ -3,6 +3,7 @@ using Contracts;
 using Entities.DataTransferObjects;
 using Entities.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -77,6 +78,78 @@ namespace CompanyEmployess.Controllers
                 clientId,
                 id = productToReturn.Id
             }, productToReturn);
+        }
+        [HttpDelete("{id}")]
+        public IActionResult DeleteProductForClient(Guid clientId, Guid id)
+        {
+            var client = _repository.Client.GetClient(clientId, trackChanges: false);
+            if (client == null)
+            {
+                _logger.LogInfo($"Client with id: {clientId} doesn't exist in the database.");
+                return NotFound();
+            }
+            var productForClient = _repository.Product.GetProduct(clientId, id,
+            trackChanges: false);
+            if (productForClient == null)
+            {
+                _logger.LogInfo($"Product with id: {id} doesn't exist in the database.");
+                return NotFound();
+            }
+            _repository.Product.DeleteProduct(productForClient);
+            _repository.Save();
+            return NoContent();
+        }
+        [HttpPut("{id}")]
+        public IActionResult UpdateProductForClient(Guid clientId, Guid id, [FromBody]
+ProductForUpdateDto product)
+        {
+            if (product == null)
+            {
+                _logger.LogError("ProductForUpdateDto object sent from client is null.");
+            return BadRequest("ProductForUpdateDto object is null");
+            }
+            var client = _repository.Client.GetClient(clientId, trackChanges: false);
+            if (client == null)
+            {
+                _logger.LogInfo($"Client with id: {clientId} doesn't exist in the database.");
+            return NotFound();
+            }
+            var productEntity = _repository.Product.GetProduct(clientId, id, trackChanges: true);
+            if (productEntity == null)
+            {
+                _logger.LogInfo($"Product with id: {id} doesn't exist in the database.");
+            return NotFound();
+            }
+            _mapper.Map(product, productEntity);
+            _repository.Save();
+            return NoContent();
+        }
+        [HttpPatch("{id}")]
+        public IActionResult PartiallyUpdateProductForClient(Guid clientId, Guid id,
+ [FromBody] JsonPatchDocument<ProductForUpdateDto> patchDoc)
+        {
+            if (patchDoc == null)
+            {
+                _logger.LogError("patchDoc object sent from client is null.");
+                return BadRequest("patchDoc object is null");
+            }
+            var client = _repository.Client.GetClient(clientId, trackChanges: false);
+            if (client == null)
+            {
+                _logger.LogInfo($"Client with id: {clientId} doesn't exist in the database.");
+            return NotFound();
+            }
+            var productEntity = _repository.Product.GetProduct(clientId, id, trackChanges: true);
+            if (productEntity == null)
+            {
+                _logger.LogInfo($"Product with id: {id} doesn't exist in the database.");
+            return NotFound();
+            }
+            var productToPatch = _mapper.Map<ProductForUpdateDto>(productEntity);
+            patchDoc.ApplyTo(productToPatch);
+            _mapper.Map(productToPatch, productEntity);
+            _repository.Save();
+            return NoContent();
         }
     }
 }
