@@ -3,10 +3,12 @@ using Contracts;
 using Entities.DataTransferObjects;
 using Entities.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 
 namespace ClientsProduct.Controllers
 {
@@ -27,14 +29,14 @@ logger, IMapper mapper)
         [HttpGet]
         public IActionResult GetClients()
         {
-            var clients = _repository.Client.GetAllClients(trackChanges: false);
+            var clients = _repository.Client.GetAllClientsAsync(trackChanges: false);
             var clientsDto = _mapper.Map<IEnumerable<ClientDto>>(clients);
             return Ok(clientsDto);
         }
         [HttpGet("{id}", Name = "ClientById")]
         public IActionResult GetClient(Guid id)
         {
-            var client = _repository.Client.GetClient(id, trackChanges: false);
+            var client = _repository.Client.GetClientAsync(id, trackChanges: false);
             if (client == null)
             {
                 _logger.LogInfo($"Client with id: {id} doesn't exist in the database.");
@@ -54,9 +56,14 @@ logger, IMapper mapper)
                 _logger.LogError("ClientForCreationDto object sent from client is null.");
             return BadRequest("ClientForCreationDto object is null");
             }
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError("Invalid model state for the ClientForCreationDto object");
+                return UnprocessableEntity(ModelState);
+            }
             var clientEntity = _mapper.Map<Client>(client);
             _repository.Client.CreateClient(clientEntity);
-            _repository.Save();
+            _repository.SaveAsync();
             var clientToReturn = _mapper.Map<ClientDto>(clientEntity);
             return CreatedAtRoute("ClientById", new { id = clientToReturn.Id },clientToReturn);
         }
@@ -70,7 +77,7 @@ logger, IMapper mapper)
                 _logger.LogError("Parameter ids is null");
                 return BadRequest("Parameter ids is null");
             }
-            var clientEntities = _repository.Client.GetByIds(ids, trackChanges: false);
+            var clientEntities = _repository.Client.GetByIdsAsync(ids, trackChanges: false);
             if (ids.Count() != clientEntities.Count())
             {
                 _logger.LogError("Some ids are not valid in a collection");
@@ -90,26 +97,31 @@ logger, IMapper mapper)
                 _logger.LogError("Client collection sent from client is null.");
                 return BadRequest("Client collection is null");
             }
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError("Invalid model state for the EmployeeForCreationDtoobject");
+                return UnprocessableEntity(ModelState);
+            }
             var clientEntities = _mapper.Map<IEnumerable<Client>>(clientCollection);
             foreach (var client in clientEntities)
             {
                 _repository.Client.CreateClient(client);
             }
-            _repository.Save();
+            _repository.SaveAsync();
             var clientCollectionToReturn = _mapper.Map<IEnumerable<ClientDto>>(clientEntities);
             return CreatedAtRoute("ClientCollection", clientCollectionToReturn);
         }
         [HttpDelete("{id}")]
         public IActionResult DeleteClient(Guid id)
         {
-            var client = _repository.Client.GetClient(id, trackChanges: false);
+            var client = _repository.Client.GetClientAsync(id, trackChanges: false);
             if (client == null)
             {
                 _logger.LogInfo($"Client with id: {id} doesn't exist in the database.");
                 return NotFound();
             }
             _repository.Client.DeleteClient(client);
-            _repository.Save();
+            _repository.SaveAsync();
             return NoContent();
         }
         [HttpPut("{id}")]
@@ -120,14 +132,19 @@ logger, IMapper mapper)
                 _logger.LogError("ClientForUpdateDto object sent from client is null.");
                 return BadRequest("ClientForUpdateDto object is null");
             }
-            var clientEntity = _repository.Client.GetClient(id, trackChanges: true);
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError("Invalid model state for the ClientForUpdateDto object");
+                return UnprocessableEntity(ModelState);
+            }
+            var clientEntity = _repository.Client.GetClientAsync(id, trackChanges: true);
             if (clientEntity == null)
             {
                 _logger.LogInfo($"Client with id: {id} doesn't exist in the database.");
                 return NotFound();
             }
             _mapper.Map(client, clientEntity);
-            _repository.Save();
+            _repository.SaveAsync();
             return NoContent();
         }
     }

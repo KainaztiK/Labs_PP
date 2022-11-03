@@ -27,26 +27,26 @@ namespace CompanyEmployess.Controllers
         [HttpGet]
         public IActionResult GetProductsForClient(Guid clientId)
         {
-            var client = _repository.Client.GetClient(clientId, trackChanges: false);
+            var client = _repository.Client.GetClientAsync(clientId, trackChanges: false);
             if (client == null)
             {
                 _logger.LogInfo($"Client with id: {clientId} doesn't exist in the database.");
                 return NotFound();
             }
-            var productFromDb = _repository.Product.GetProducts(clientId, trackChanges: false);
+            var productFromDb = _repository.Product.GetProductsAsync(clientId, trackChanges: false);
             var productDto = _mapper.Map<IEnumerable<ProductDto>>(productFromDb);
             return Ok(productDto);
         }
         [HttpGet("{Id}", Name = "GetProductForClient")]
         public IActionResult GetProductsForClient(Guid clientId, Guid id)
         {
-            var client = _repository.Client.GetClient(clientId, trackChanges: false);
+            var client = _repository.Client.GetClientAsync(clientId, trackChanges: false);
             if (client == null)
             {
                 _logger.LogInfo($"Client with id: {clientId} doesn't exist in the database.");
                 return NotFound();
             }
-            var productDb = _repository.Product.GetProduct(clientId, id, trackChanges: false);
+            var productDb = _repository.Product.GetProductAsync(clientId, id, trackChanges: false);
             if (productDb == null)
             {
                 _logger.LogInfo($"Product with id: {id} doesn't exist in the database.");
@@ -63,7 +63,14 @@ namespace CompanyEmployess.Controllers
                 _logger.LogError("ProductForCreationDto object sent from client is null.");
             return BadRequest("ProductForCreationDto object is null");
             }
-            var client = _repository.Client.GetClient(clientId, trackChanges: false);
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError("Invalid model state for the ProductForCreationDto object");
+                return UnprocessableEntity(ModelState);
+            }
+
+            var client = _repository.Client.GetClientAsync(clientId, trackChanges: false);
             if (client == null)
             {
                 _logger.LogInfo($"Client with id: {clientId} doesn't exist in the database.");
@@ -71,7 +78,7 @@ namespace CompanyEmployess.Controllers
             }
             var productEntity = _mapper.Map<Product>(product);
             _repository.Product.CreateProductForClient(clientId, productEntity);
-            _repository.Save();
+            _repository.SaveAsync();
             var productToReturn = _mapper.Map<ProductDto>(productEntity);
             return CreatedAtRoute("GetProductForClient", new
             {
@@ -82,13 +89,13 @@ namespace CompanyEmployess.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteProductForClient(Guid clientId, Guid id)
         {
-            var client = _repository.Client.GetClient(clientId, trackChanges: false);
+            var client = _repository.Client.GetClientAsync(clientId, trackChanges: false);
             if (client == null)
             {
                 _logger.LogInfo($"Client with id: {clientId} doesn't exist in the database.");
                 return NotFound();
             }
-            var productForClient = _repository.Product.GetProduct(clientId, id,
+            var productForClient = _repository.Product.GetProductAsync(clientId, id,
             trackChanges: false);
             if (productForClient == null)
             {
@@ -96,7 +103,7 @@ namespace CompanyEmployess.Controllers
                 return NotFound();
             }
             _repository.Product.DeleteProduct(productForClient);
-            _repository.Save();
+            _repository.SaveAsync();
             return NoContent();
         }
         [HttpPut("{id}")]
@@ -108,20 +115,25 @@ ProductForUpdateDto product)
                 _logger.LogError("ProductForUpdateDto object sent from client is null.");
             return BadRequest("ProductForUpdateDto object is null");
             }
-            var client = _repository.Client.GetClient(clientId, trackChanges: false);
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError("Invalid model state for the ProductForUpdateDto object");
+                return UnprocessableEntity(ModelState);
+            }
+            var client = _repository.Client.GetClientAsync(clientId, trackChanges: false);
             if (client == null)
             {
                 _logger.LogInfo($"Client with id: {clientId} doesn't exist in the database.");
             return NotFound();
             }
-            var productEntity = _repository.Product.GetProduct(clientId, id, trackChanges: true);
+            var productEntity = _repository.Product.GetProductAsync(clientId, id, trackChanges: true);
             if (productEntity == null)
             {
                 _logger.LogInfo($"Product with id: {id} doesn't exist in the database.");
             return NotFound();
             }
             _mapper.Map(product, productEntity);
-            _repository.Save();
+            _repository.SaveAsync();
             return NoContent();
         }
         [HttpPatch("{id}")]
@@ -133,22 +145,28 @@ ProductForUpdateDto product)
                 _logger.LogError("patchDoc object sent from client is null.");
                 return BadRequest("patchDoc object is null");
             }
-            var client = _repository.Client.GetClient(clientId, trackChanges: false);
+            var client = _repository.Client.GetClientAsync(clientId, trackChanges: false);
             if (client == null)
             {
                 _logger.LogInfo($"Client with id: {clientId} doesn't exist in the database.");
             return NotFound();
             }
-            var productEntity = _repository.Product.GetProduct(clientId, id, trackChanges: true);
+            var productEntity = _repository.Product.GetProductAsync(clientId, id, trackChanges: true);
             if (productEntity == null)
             {
                 _logger.LogInfo($"Product with id: {id} doesn't exist in the database.");
             return NotFound();
             }
             var productToPatch = _mapper.Map<ProductForUpdateDto>(productEntity);
-            patchDoc.ApplyTo(productToPatch);
+            patchDoc.ApplyTo(productToPatch, ModelState);
+            TryValidateModel(productToPatch);
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError("Invalid model state for the patch document");
+                return UnprocessableEntity(ModelState);
+            }
             _mapper.Map(productToPatch, productEntity);
-            _repository.Save();
+            _repository.SaveAsync();
             return NoContent();
         }
     }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Entities.DataTransferObjects
 {
-    public class ProductForCreationDto
+    public abstract class ProductForManipulationDto
     {
         [Required(ErrorMessage = "Product name is a required field.")]
         [MaxLength(30, ErrorMessage = "Maximum length for the Name is 30 characters.")]
