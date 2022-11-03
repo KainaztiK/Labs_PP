@@ -18,5 +18,6 @@ namespace Entities.Models
         [Required(ErrorMessage = "Position is a required field.")]
         [MaxLength(100, ErrorMessage = "Maximum length for the Address is 100 characters.")]
         public string Address { get; set; }
+        public ICollection<Product> Products { get; set; }
     }
 }
