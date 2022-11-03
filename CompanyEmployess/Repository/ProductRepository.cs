@@ -24,5 +24,10 @@ namespace Repository
         public Product GetProduct(Guid clientId, Guid id, bool trackChanges) =>
             FindByCondition(e => e.ClientId.Equals(clientId) && e.Id.Equals(id) && e.Id.Equals(id),
             trackChanges).SingleOrDefault();
+        public void CreateProductForClient(Guid clientId, Product product)
+        {
+            product.ClientId = clientId;
+            Create(product);
+        }
     }
 }
