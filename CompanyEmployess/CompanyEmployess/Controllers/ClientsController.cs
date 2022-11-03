@@ -1,15 +1,16 @@
 ﻿using AutoMapper;
 using Contracts;
 using Entities.DataTransferObjects;
+using Entities.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CompanyEmployess.Controllers
+namespace ClientsProduct.Controllers
 {
-    [Route("api/companies")]
+    [Route("api/clients")]
     [ApiController]
     public class CompaniesController : ControllerBase
     {
@@ -24,25 +25,25 @@ logger, IMapper mapper)
             _mapper = mapper;
         }
         [HttpGet]
-        public IActionResult GetCompanies()
+        public IActionResult GetClients()
         {
-            var companies = _repository.Company.GetAllCompanies(trackChanges: false);
-            var companiesDto = _mapper.Map<IEnumerable<CompanyDto>>(companies);
-            return Ok(companiesDto);
+            var clients = _repository.Client.GetAllClients(trackChanges: false);
+            var clientsDto = _mapper.Map<IEnumerable<ClientDto>>(clients);
+            return Ok(clientsDto);
         }
         [HttpGet("{id}")]
-        public IActionResult GetCompany(Guid id)
+        public IActionResult GetClient(Guid id)
         {
-            var company = _repository.Company.GetCompany(id,trackChanges: false);
-            if (company == null)
+            var client = _repository.Client.GetClient(id, trackChanges: false);
+            if (client == null)
             {
-                _logger.LogInfo($"Company with id: {id} doesn't exist in the database.");
+                _logger.LogInfo($"Client with id: {id} doesn't exist in the database.");
                 return NotFound();
             }
             else
             {
-                var companyDto = _mapper.Map<CompanyDto>(company);
-                return Ok(companyDto);
+                var clientDto = _mapper.Map<CompanyDto>(client);
+                return Ok(clientDto);
             }
         }
     }

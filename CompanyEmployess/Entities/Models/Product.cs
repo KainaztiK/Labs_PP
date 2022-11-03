@@ -20,5 +20,7 @@ namespace Entities.Models
         [Required(ErrorMessage = "Product_description is a required field.")]
         [MaxLength(100, ErrorMessage = "Maximum length for the Product_description is 100 characters.")]
         public string Product_desciption { get; set; }
+        public Guid ClientId { get; set; }
+        public Client Client { get; set; }
     }
 }

@@ -34,6 +34,11 @@ namespace CompanyEmployess
             services.ConfigureRepositoryManager();
             services.AddControllers();
             services.AddAutoMapper(typeof(Startup));
+            services.AddControllers(config => {
+                config.RespectBrowserAcceptHeader = true;
+                config.ReturnHttpNotAcceptable = true;
+            }).AddXmlDataContractSerializerFormatters()
+            .AddCustomCSVFormatter();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,8 +72,11 @@ namespace CompanyEmployess
             public MappingProfile()
             {
                 CreateMap<Company, CompanyDto>()
-                .ForMember(c => c.FullAddress,
-                opt => opt.MapFrom(x => string.Join(' ', x.Address, x.Country)));
+                    .ForMember(c => c.FullAddress,
+                        opt => opt.MapFrom(x => string.Join(' ', x.Address, x.Country)));
+                CreateMap<Employee, EmployeeDto>();
+                CreateMap<Product, ProductDto>();
+                CreateMap<Client, ClientDto>();
             }
         }
     }
