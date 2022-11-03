@@ -29,5 +29,9 @@ namespace Repository
             product.ClientId = clientId;
             Create(product);
         }
+        public void DeleteProduct(Product product)
+        {
+            Delete(product);
+        }
     }
 }

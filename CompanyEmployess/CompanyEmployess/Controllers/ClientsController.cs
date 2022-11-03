@@ -99,5 +99,36 @@ logger, IMapper mapper)
             var clientCollectionToReturn = _mapper.Map<IEnumerable<ClientDto>>(clientEntities);
             return CreatedAtRoute("ClientCollection", clientCollectionToReturn);
         }
+        [HttpDelete("{id}")]
+        public IActionResult DeleteClient(Guid id)
+        {
+            var client = _repository.Client.GetClient(id, trackChanges: false);
+            if (client == null)
+            {
+                _logger.LogInfo($"Client with id: {id} doesn't exist in the database.");
+                return NotFound();
+            }
+            _repository.Client.DeleteClient(client);
+            _repository.Save();
+            return NoContent();
+        }
+        [HttpPut("{id}")]
+        public IActionResult UpdateClient(Guid id, [FromBody] ClientForUpdateDto client)
+        {
+            if (client == null)
+            {
+                _logger.LogError("ClientForUpdateDto object sent from client is null.");
+                return BadRequest("ClientForUpdateDto object is null");
+            }
+            var clientEntity = _repository.Client.GetClient(id, trackChanges: true);
+            if (clientEntity == null)
+            {
+                _logger.LogInfo($"Client with id: {id} doesn't exist in the database.");
+                return NotFound();
+            }
+            _mapper.Map(client, clientEntity);
+            _repository.Save();
+            return NoContent();
+        }
     }
 }
