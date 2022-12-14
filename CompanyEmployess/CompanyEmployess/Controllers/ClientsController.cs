@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CompanyEmployess.ActionFilters;
 using CompanyEmployess.ModelBinders;
 using Contracts;
 using Entities.DataTransferObjects;
@@ -51,18 +52,9 @@ logger, IMapper mapper)
             }
         }
         [HttpPost]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateClient([FromBody] ClientForCreationDto Client)
         {
-            if (Client == null)
-            {
-                _logger.LogError("ClientForCreationDto object sent from client is null.");
-                return BadRequest("ClientForCreationDto object is null");
-            }
-            if (!ModelState.IsValid)
-            {
-                _logger.LogError("Invalid model state for the ClientForCreationDto object");
-                return UnprocessableEntity(ModelState);
-            }
             var ClientEntity = _mapper.Map<Client>(Client);
             _repository.Client.CreateClient(ClientEntity);
             await _repository.SaveAsync();
@@ -115,38 +107,20 @@ logger, IMapper mapper)
             ClientCollectionToReturn);
         }
         [HttpDelete("{id}")]
+        [ServiceFilter(typeof(ValidateClientExistsAttribute))]
         public async Task<IActionResult> DeleteClient(Guid id)
         {
-            var Client = await _repository.Client.GetClientAsync(id, trackChanges:
-           false);
-            if (Client == null)
-            {
-                _logger.LogInfo($"Client with id: {id} doesn't exist in the database.");
-                return NotFound();
-            }
+            var Client = HttpContext.Items["client"] as Client;
             _repository.Client.DeleteClient(Client);
             await _repository.SaveAsync();
             return NoContent();
         }
         [HttpPut("{id}")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [ServiceFilter(typeof(ValidateClientExistsAttribute))]
         public async Task<IActionResult> UpdateClient(Guid id, [FromBody] ClientForUpdateDto Client)
         {
-            if (Client == null)
-            {
-                _logger.LogError("ClientForUpdateDto object sent from client is null.");
-                return BadRequest("ClientForUpdateDto object is null");
-            }
-            if (!ModelState.IsValid)
-            {
-                _logger.LogError("Invalid model state for the EmployeeForUpdateDto object");
-                return UnprocessableEntity(ModelState);
-            }
-            var ClientEntity = await _repository.Client.GetClientAsync(id, trackChanges: true);
-            if (ClientEntity == null)
-            {
-                _logger.LogInfo($"Client with id: {id} doesn't exist in the database.");
-                return NotFound();
-            }
+            var ClientEntity = HttpContext.Items["client"] as Client;
             _mapper.Map(Client, ClientEntity);
             await _repository.SaveAsync();
             return NoContent();

@@ -13,6 +13,7 @@ using NLog;
 using System.IO;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc;
+using CompanyEmployess.ActionFilters;
 
 namespace CompanyEmployess
 {
@@ -44,6 +45,11 @@ namespace CompanyEmployess
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
+            services.AddScoped<ValidationFilterAttribute>();
+            services.AddScoped<ValidateCompanyExistsAttribute>();
+            services.AddScoped<ValidateEmployeeForCompanyExistsAttribute>();
+            services.AddScoped<ValidateClientExistsAttribute>();
+            services.AddScoped<ValidateProductForClientExistsAttribute>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
