@@ -57,6 +57,5 @@ namespace Repository
             }
         }
         public Task SaveAsync() => _repositoryContext.SaveChangesAsync();
-
     }
 }

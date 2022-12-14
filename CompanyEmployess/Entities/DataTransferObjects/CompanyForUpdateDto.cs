@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Entities.DataTransferObjects
 {
-    public class CompanyForUpdateDto : CompanyForManipulationDto
+    public class CompanyForUpdateDto
     {
-        
+
     }
 }

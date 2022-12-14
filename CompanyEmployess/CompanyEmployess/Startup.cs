@@ -39,9 +39,7 @@ namespace CompanyEmployess
             services.AddControllers(config => {
                 config.RespectBrowserAcceptHeader = true;
                 config.ReturnHttpNotAcceptable = true;
-            }).AddNewtonsoftJson()
-            .AddXmlDataContractSerializerFormatters()
-            .AddCustomCSVFormatter();
+            }).AddNewtonsoftJson().AddXmlDataContractSerializerFormatters().AddCustomCSVFormatter();
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;

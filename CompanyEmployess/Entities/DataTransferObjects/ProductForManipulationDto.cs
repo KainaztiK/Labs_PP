@@ -14,6 +14,6 @@ namespace Entities.DataTransferObjects
         public int Price { get; set; }
         [Required(ErrorMessage = "Product_desciption is a required field.")]
         [MaxLength(200, ErrorMessage = "Maximum length for the Product_desciption is 200 characters.")]
-        public string Product_desciption { get; set; }
+        public string Product_desciption { get; set; } 
     }
 }

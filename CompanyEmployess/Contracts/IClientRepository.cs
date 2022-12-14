@@ -12,7 +12,6 @@ namespace Contracts
         Task<Client> GetClientAsync(Guid clientId, bool trackChanges);
         void CreateClient(Client client);
         Task<IEnumerable<Client>> GetByIdsAsync(IEnumerable<Guid> ids, bool trackChanges);
-        void DeleteClient(Client client);
-        void DeleteClient(Task<Client> client);
+        void DeleteClient(Client Client);
     }
 }
