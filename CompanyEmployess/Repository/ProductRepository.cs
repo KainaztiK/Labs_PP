@@ -8,6 +8,7 @@ using Contracts;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Entities.RequestFeatures;
+using Repository.Extensions;
 
 namespace Repository
 {
@@ -21,14 +22,15 @@ namespace Repository
         public async Task<PagedList<Product>> GetProductsAsync(Guid clientId,
             ProductParameters productParameters, bool trackChanges)
         {
-            var products = await FindByCondition(e => e.ClientId.Equals(clientId) &&
-             (e.Price >= productParameters.MinPrice && e.Price <= productParameters.MaxPrice),
-             trackChanges)
-              .OrderBy(e => e.Name)
-              .ToListAsync();
+            var products = await FindByCondition(e => e.ClientId.Equals(clientId),
+            trackChanges)
+            .FilterProducts(productParameters.MinPrice, productParameters.MaxPrice)
+            .Search(productParameters.SearchPrice)
+            .Sort(productParameters.OrderBy)
+            .ToListAsync();
             return PagedList<Product>
-             .ToPagedList(products, productParameters.PageNumber,
-             productParameters.PageSize);
+            .ToPagedList(products, productParameters.PageNumber,
+            productParameters.PageSize);
         }
         public async Task<Product> GetProductAsync(Guid clientId, Guid id, bool trackChanges) =>
             await FindByCondition(e => e.ClientId.Equals(clientId) &&
