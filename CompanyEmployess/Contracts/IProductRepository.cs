@@ -12,6 +12,6 @@ namespace Contracts
         Task<Product> GetProductAsync(Guid clientId, Guid id, bool trackChanges);
         void CreateProductForClient(Guid clientId, Product product);
         void DeleteProduct(Product product);
-        void DeleteProduct(Task<Product> productForClient);
+
     }
 }

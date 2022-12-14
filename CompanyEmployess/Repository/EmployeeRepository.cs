@@ -1,5 +1,4 @@
-﻿using Contracts;
-using Entities;
+﻿using Entities;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -10,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public class EmployeeRepository : RepositoryBase<Employee>, IEmployeeRepository
+    public class EmployeeRepository : RepositoryBase<Employee>, Contracts.IEmployeeRepository
     {
         public EmployeeRepository(RepositoryContext repositoryContext)
         : base(repositoryContext)
         {
         }
         public async Task<IEnumerable<Employee>> GetEmployeesAsync(Guid companyId, bool trackChanges) =>
-           await FindByCondition(e => e.CompanyId.Equals(companyId), trackChanges).OrderBy(e => e.Name).ToListAsync();
+            await FindByCondition(e => e.CompanyId.Equals(companyId), trackChanges).OrderBy(e => e.Name).ToListAsync();
 
         public async Task<Employee> GetEmployeeAsync(Guid companyId, Guid id, bool trackChanges) =>
            await FindByCondition(e => e.CompanyId.Equals(companyId) &&

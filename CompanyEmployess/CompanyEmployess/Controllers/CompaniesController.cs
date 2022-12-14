@@ -20,7 +20,7 @@ namespace CompanyEmployess.Controllers
         private readonly ILoggerManager _logger;
         private readonly IMapper _mapper;
         public CompaniesController(IRepositoryManager repository, ILoggerManager
-       logger, IMapper mapper)
+logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
@@ -29,8 +29,7 @@ namespace CompanyEmployess.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCompanies()
         {
-            var companies = await _repository.Company.GetAllCompaniesAsync(trackChanges:
-           false);
+            var companies = await _repository.Company.GetAllCompaniesAsync(trackChanges: false);
             var companiesDto = _mapper.Map<IEnumerable<CompanyDto>>(companies);
             return Ok(companiesDto);
         }
@@ -51,14 +50,12 @@ namespace CompanyEmployess.Controllers
                 return Ok(companyDto);
             }
         }
-
-        [HttpPost]
         [HttpPost]
         public async Task<IActionResult> CreateCompany([FromBody] CompanyForCreationDto company)
         {
             if (company == null)
             {
-                _logger.LogError("CompanyForCreationDto object sent from client isnull.");
+                _logger.LogError("CompanyForCreationDto object sent from client is null.");
                 return BadRequest("CompanyForCreationDto object is null");
             }
             if (!ModelState.IsValid)
@@ -71,12 +68,12 @@ namespace CompanyEmployess.Controllers
             await _repository.SaveAsync();
             var companyToReturn = _mapper.Map<CompanyDto>(companyEntity);
             return CreatedAtRoute("CompanyById", new { id = companyToReturn.Id },
-           companyToReturn);
+            companyToReturn);
         }
 
         [HttpGet("collection/({ids})", Name = "CompanyCollection")]
         public async Task<IActionResult> GetCompanyCollection(
- [ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
+        [ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
         {
             if (ids == null)
             {
@@ -84,7 +81,7 @@ namespace CompanyEmployess.Controllers
                 return BadRequest("Parameter ids is null");
             }
             var companyEntities = await _repository.Company.GetByIdsAsync(ids,
-           trackChanges: false);
+            trackChanges: false);
             if (ids.Count() != companyEntities.Count())
             {
                 _logger.LogError("Some ids are not valid in a collection");
@@ -95,8 +92,10 @@ namespace CompanyEmployess.Controllers
             return Ok(companiesToReturn);
         }
 
+
         [HttpPost("collection")]
-        public async Task<IActionResult> CreateCompanyCollection([FromBody] IEnumerable<CompanyForCreationDto> companyCollection)
+        public async Task<IActionResult> CreateCompanyCollection(
+        [FromBody] IEnumerable<CompanyForCreationDto> companyCollection)
         {
             if (companyCollection == null)
             {
@@ -113,10 +112,8 @@ namespace CompanyEmployess.Controllers
             _mapper.Map<IEnumerable<CompanyDto>>(companyEntities);
             var ids = string.Join(",", companyCollectionToReturn.Select(c => c.Id));
             return CreatedAtRoute("CompanyCollection", new { ids },
-           companyCollectionToReturn);
+            companyCollectionToReturn);
         }
-
-
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCompany(Guid id)
         {
@@ -131,7 +128,6 @@ namespace CompanyEmployess.Controllers
             await _repository.SaveAsync();
             return NoContent();
         }
-
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCompany(Guid id, [FromBody] CompanyForUpdateDto company)
         {
@@ -142,11 +138,10 @@ namespace CompanyEmployess.Controllers
             }
             if (!ModelState.IsValid)
             {
-                _logger.LogError("Invalid model state for the CompanyForUpdateDto object");
+                _logger.LogError("Invalid model state for the EmployeeForUpdateDto object");
                 return UnprocessableEntity(ModelState);
             }
-            var companyEntity = await _repository.Company.GetCompanyAsync(id, trackChanges:
-            true);
+            var companyEntity = await _repository.Company.GetCompanyAsync(id, trackChanges: true);
             if (companyEntity == null)
             {
                 _logger.LogInfo($"Company with id: {id} doesn't exist in the database.");
@@ -156,6 +151,5 @@ namespace CompanyEmployess.Controllers
             await _repository.SaveAsync();
             return NoContent();
         }
-
     }
 }
