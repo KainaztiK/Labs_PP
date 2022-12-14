@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
+using CompanyEmployess.ActionFilters;
 using Contracts;
 using Entities.DataTransferObjects;
 using Entities.Models;
+using Entities.RequestFeatures;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,18 +31,23 @@ namespace CompanyEmployess.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetProductsForClient(Guid ClientId, Guid id)
+        public async Task<IActionResult> GetProductsForClient(Guid clientId,
+        [FromQuery] ProductParameters productParameters)
         {
-            var Client = _repository.Client.GetClientAsync(ClientId, trackChanges: false);
-            if (Client == null)
+            if (!productParameters.ValidPriceRange)
+                return BadRequest("Max price can't be less than min price.");
+            var client = _repository.Client.GetClientAsync(clientId, trackChanges: false);
+            if (client == null)
             {
-                _logger.LogInfo($"Client with id: {ClientId} doesn't exist in the database.");
+                _logger.LogInfo($"Client with id: {clientId} doesn't exist in the database.");
                 return NotFound();
             }
-            var ProductsFromDb = _repository.Product.GetProductsAsync(ClientId,
-            trackChanges: false);
-            var ProductsDto = _mapper.Map<IEnumerable<ProductDto>>(ProductsFromDb);
-            return Ok(ProductsDto);
+            var productsFromDb = await _repository.Product.GetProductsAsync(clientId,
+                productParameters, trackChanges: false);
+            Response.Headers.Add("X-Pagination",
+                JsonConvert.SerializeObject(productsFromDb.MetaData));
+            var productsDto = _mapper.Map<IEnumerable<ProductDto>>(productsFromDb);
+            return Ok(productsDto);
         }
 
         [HttpGet("{id}", Name = "GetProductForClient")]
@@ -64,26 +72,9 @@ namespace CompanyEmployess.Controllers
         }
 
         [HttpPost]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public IActionResult CreateProductForClient(Guid ClientId, [FromBody] ProductForCreationDto Product)
         {
-            if (Product == null)
-            {
-                _logger.LogError("ProductForCreationDto object sent from client isnull.");
-                return BadRequest("ProductForCreationDto object is null");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                _logger.LogError("Invalid model state for the ProductForCreationDtoobject");
-                return UnprocessableEntity(ModelState);
-            }
-
-            var Client = _repository.Client.GetClientAsync(ClientId, trackChanges: false);
-            if (Client == null)
-            {
-                _logger.LogInfo($"Client with id: {ClientId} doesn't exist in thedatabase.");
-                return NotFound();
-            }
             var ProductEntity = _mapper.Map<Product>(Product);
             _repository.Product.CreateProductForClient(ClientId, ProductEntity);
             _repository.SaveAsync();
@@ -96,59 +87,28 @@ namespace CompanyEmployess.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ServiceFilter(typeof(ValidateProductForClientExistsAttribute))]
         public async Task<IActionResult> DeleteProductForClientAsync(Guid ClientId, Guid id)
         {
-            var Client = await _repository.Client.GetClientAsync(ClientId, trackChanges: false);
-            if (Client == null)
-            {
-                _logger.LogInfo($"Client with id: {ClientId} doesn't exist in thedatabase.");
-                return NotFound();
-            }
-            var ProductForClient = await _repository.Product.GetProductAsync(ClientId, id,
-            trackChanges: false);
-            if (ProductForClient == null)
-            {
-                _logger.LogInfo($"Product with id: {id} doesn't exist in thedatabase.");
-                return NotFound();
-            }
+            var ProductForClient = HttpContext.Items["product"] as Product;
             _repository.Product.DeleteProduct(ProductForClient);
             _repository.SaveAsync();
             return NoContent();
         }
 
         [HttpPut("{id}")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [ServiceFilter(typeof(ValidateProductForClientExistsAttribute))]
         public IActionResult UpdateProductForClient(Guid ClientId, Guid id, [FromBody] ProductForUpdateDto Product)
         {
-            if (Product == null)
-            {
-                _logger.LogError("ProductForUpdateDto object sent from client isnull.");
-                return BadRequest("ProductForUpdateDto object is null");
-            }
-            if (!ModelState.IsValid)
-            {
-                _logger.LogError("Invalid model state for the ProductForUpdateDto object");
-                return UnprocessableEntity(ModelState);
-            }
-            var Client = _repository.Client.GetClientAsync(ClientId, trackChanges: false);
-            if (Client == null)
-            {
-                _logger.LogInfo($"Client with id: {ClientId} doesn't exist in thedatabase.");
-                return NotFound();
-            }
-            var ProductEntity = _repository.Product.GetProductAsync(ClientId, id,
-           trackChanges:
-            true);
-            if (ProductEntity == null)
-            {
-                _logger.LogInfo($"Product with id: {id} doesn't exist in the database.");
-                return NotFound();
-            }
+            var ProductEntity = HttpContext.Items["product"] as Product;
             _mapper.Map(Product, ProductEntity);
             _repository.SaveAsync();
             return NoContent();
         }
 
         [HttpPatch("{id}")]
+        [ServiceFilter(typeof(ValidateProductForClientExistsAttribute))]
         public IActionResult PartiallyUpdateProductForClient(Guid ClientId, Guid id, [FromBody] JsonPatchDocument<ProductForUpdateDto> patchDoc)
         {
             if (patchDoc == null)
@@ -157,20 +117,8 @@ namespace CompanyEmployess.Controllers
                 return BadRequest("patchDoc object is null");
             }
 
-            var Client = _repository.Client.GetClientAsync(ClientId, trackChanges: false);
-            if (Client == null)
-            {
-                _logger.LogInfo($"Client with id: {ClientId} doesn't exist in the  database.");
-                return NotFound();
-            }
-            var ProductEntity = _repository.Product.GetProductAsync(ClientId, id,
-           trackChanges:
-            true);
-            if (ProductEntity == null)
-            {
-                _logger.LogInfo($"Product with id: {id} doesn't exist in the database.");
-                return NotFound();
-            }
+           
+            var ProductEntity = HttpContext.Items["product"] as Product;
             var ProductToPatch = _mapper.Map<ProductForUpdateDto>(ProductEntity);
             patchDoc.ApplyTo(ProductToPatch, ModelState);
             TryValidateModel(ProductToPatch);
