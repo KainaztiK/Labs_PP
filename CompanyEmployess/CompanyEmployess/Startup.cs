@@ -14,6 +14,7 @@ using System.IO;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc;
 using CompanyEmployess.ActionFilters;
+using Repository.DataShaping;
 
 namespace CompanyEmployess
 {
@@ -50,6 +51,8 @@ namespace CompanyEmployess
             services.AddScoped<ValidateEmployeeForCompanyExistsAttribute>();
             services.AddScoped<ValidateClientExistsAttribute>();
             services.AddScoped<ValidateProductForClientExistsAttribute>();
+            services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>>();
+            services.AddScoped<IDataShaper<ProductDto>, DataShaper<ProductDto>>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

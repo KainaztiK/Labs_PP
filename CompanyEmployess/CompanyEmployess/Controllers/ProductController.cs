@@ -22,12 +22,14 @@ namespace CompanyEmployess.Controllers
         private readonly IRepositoryManager _repository;
         private readonly ILoggerManager _logger;
         private readonly IMapper _mapper;
-        public ProductController(IRepositoryManager repository, ILoggerManager
-       logger, IMapper mapper)
+        private readonly IDataShaper<ProductDto> _dataShaper;
+        public ProductController(IRepositoryManager repository, ILoggerManager logger,
+         IMapper mapper, IDataShaper<ProductDto> dataShaper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _dataShaper = dataShaper;
         }
 
         [HttpGet]
@@ -47,7 +49,7 @@ namespace CompanyEmployess.Controllers
             Response.Headers.Add("X-Pagination",
                 JsonConvert.SerializeObject(productsFromDb.MetaData));
             var productsDto = _mapper.Map<IEnumerable<ProductDto>>(productsFromDb);
-            return Ok(productsDto);
+            return Ok(_dataShaper.ShapeData(productsDto, productParameters.Fields));
         }
 
         [HttpGet("{id}", Name = "GetProductForClient")]
