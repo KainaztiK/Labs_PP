@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using NLog;
 using System.IO;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyEmployess
 {
@@ -41,6 +42,10 @@ namespace CompanyEmployess
             }).AddNewtonsoftJson()
             .AddXmlDataContractSerializerFormatters()
             .AddCustomCSVFormatter();
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Entities.DataTransferObjects
 {
-    public class CompanyForCreationDto
+    public abstract class CompanyForManipulationDto
     {
         [Required(ErrorMessage = "Company name is a required field.")]
         [MaxLength(50, ErrorMessage = "Maximum length for the Name is 50 characters.")]
@@ -16,6 +16,5 @@ namespace Entities.DataTransferObjects
         [Required(ErrorMessage = "Company country is a required field.")]
         [MaxLength(30, ErrorMessage = "Maximum length for the Country is 30 characters.")]
         public string Country { get; set; }
-
     }
 }
