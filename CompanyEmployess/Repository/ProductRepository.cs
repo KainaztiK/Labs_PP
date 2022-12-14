@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Contracts;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Repository
 {
@@ -13,17 +15,13 @@ namespace Repository
         public ProductRepository(RepositoryContext repositoryContext)
         : base(repositoryContext)
         {
-        }
-        //public IEnumerable<Product> GetProducts(bool trackChanges) =>
-        //    FindAll(trackChanges).OrderBy(c => c.Name).ToList();
-   
+        }   
 
-        public IEnumerable<Product> GetProducts(Guid clientId, bool trackChanges) =>
-        FindByCondition(e => e.ClientId.Equals(clientId), trackChanges)
-            .OrderBy(e => e.Name);
-        public Product GetProduct(Guid clientId, Guid id, bool trackChanges) =>
-            FindByCondition(e => e.ClientId.Equals(clientId) && e.Id.Equals(id) && e.Id.Equals(id),
-            trackChanges).SingleOrDefault();
+        public async Task<IEnumerable<Product>> GetProductsAsync(Guid clientId, bool trackChanges) =>
+         await FindByCondition(e => e.ClientId.Equals(clientId), trackChanges).OrderBy(e => e.Name).ToListAsync();
+        public async Task<Product> GetProductAsync(Guid clientId, Guid id, bool trackChanges) =>
+            await FindByCondition(e => e.ClientId.Equals(clientId) &&
+            e.Id.Equals(id), trackChanges).SingleOrDefaultAsync();
         public void CreateProductForClient(Guid clientId, Product product)
         {
             product.ClientId = clientId;
