@@ -27,6 +27,13 @@ logger, IMapper mapper)
             _logger = logger;
             _mapper = mapper;
         }
+        [HttpOptions]
+        public IActionResult GetClientsOptions()
+        {
+            Response.Headers.Add("Allow", "GET, OPTIONS, POST");
+            return Ok();
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetClients()
         {
