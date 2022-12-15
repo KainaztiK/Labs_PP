@@ -33,6 +33,7 @@ namespace CompanyEmployess.Controllers
         }
 
         [HttpGet]
+        [HttpHead]
         public async Task<IActionResult> GetEmployeesForCompany(Guid companyId,
         [FromQuery] EmployeeParameters employeeParameters)
         {
