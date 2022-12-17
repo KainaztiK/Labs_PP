@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc;
 using CompanyEmployess.ActionFilters;
 using Repository.DataShaping;
+using Repository;
 
 namespace CompanyEmployess
 {
@@ -53,7 +54,12 @@ namespace CompanyEmployess
             services.AddScoped<ValidateProductForClientExistsAttribute>();
             services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>>();
             services.AddScoped<IDataShaper<ProductDto>, DataShaper<ProductDto>>();
+            services.AddScoped<IAuthenticationManager, AuthenticationManager>();
             services.ConfigureVersioning();
+            services.AddAuthentication();
+            services.ConfigureIdentity();
+            services.ConfigureJWT(Configuration);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -100,6 +106,7 @@ namespace CompanyEmployess
                 CreateMap<ProductForUpdateDto, Product>().ReverseMap();
                 CreateMap<CompanyForUpdateDto, Company>();
                 CreateMap<ClientForUpdateDto, Client>();
+                CreateMap<UserForRegistrationDto, User>();
 
             }
         }
