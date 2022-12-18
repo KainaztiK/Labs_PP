@@ -15,6 +15,7 @@ namespace ClientsProduct.Controllers
 {
     [Route("api/clients")]
     [ApiController]
+    [ApiExplorerSettings(GroupName = "v1")]
     public class ClientsController : ControllerBase
     {
         private readonly IRepositoryManager _repository;
@@ -33,7 +34,9 @@ logger, IMapper mapper)
             Response.Headers.Add("Allow", "GET, OPTIONS, POST");
             return Ok();
         }
-
+        /// <summary>
+        /// Получает список всех клиентов
+        /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetClients()
         {
@@ -41,7 +44,9 @@ logger, IMapper mapper)
             var ClientsDto = _mapper.Map<IEnumerable<ClientDto>>(Clients);
             return Ok(ClientsDto);
         }
-
+        /// <summary>
+        /// Получает информацию клиента по id
+        /// </summary>
         [HttpGet("{id}", Name = "ClientById")]
         public async Task<IActionResult> GetClient(Guid id)
         {
@@ -58,6 +63,9 @@ logger, IMapper mapper)
                 return Ok(ClientDto);
             }
         }
+        /// <summary>
+        /// Создает клиента
+        /// </summary>
         [HttpPost]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateClient([FromBody] ClientForCreationDto Client)
@@ -69,7 +77,9 @@ logger, IMapper mapper)
             return CreatedAtRoute("ClientById", new { id = ClientToReturn.Id },
             ClientToReturn);
         }
-
+        /// <summary>
+        /// Получает коллекцию клиентов
+        /// </summary>
         [HttpGet("collection/({ids})", Name = "ClientCollection")]
         public async Task<IActionResult> GetClientCollection(
         [ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
@@ -91,7 +101,9 @@ logger, IMapper mapper)
             return Ok(ClientToReturn);
         }
 
-
+        /// <summary>
+        /// Создает коллекцию клиентов
+        /// </summary>
         [HttpPost("collection")]
         public async Task<IActionResult> CreateClientCollection(
         [FromBody] IEnumerable<ClientForCreationDto> ClientCollection)
@@ -113,6 +125,9 @@ logger, IMapper mapper)
             return CreatedAtRoute("ClientCollection", new { ids },
             ClientCollectionToReturn);
         }
+        /// <summary>
+        /// Удаляет клиента по id
+        /// </summary>
         [HttpDelete("{id}")]
         [ServiceFilter(typeof(ValidateClientExistsAttribute))]
         public async Task<IActionResult> DeleteClient(Guid id)
@@ -122,6 +137,9 @@ logger, IMapper mapper)
             await _repository.SaveAsync();
             return NoContent();
         }
+        /// <summary>
+        /// Обновляет данные клиента по id
+        /// </summary>
         [HttpPut("{id}")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         [ServiceFilter(typeof(ValidateClientExistsAttribute))]

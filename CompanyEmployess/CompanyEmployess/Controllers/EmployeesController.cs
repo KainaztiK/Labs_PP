@@ -31,7 +31,9 @@ namespace CompanyEmployess.Controllers
             _mapper = mapper;
             _dataShaper = dataShaper;
         }
-
+        /// <summary>
+        /// Получает список сотрутдников для компании
+        /// </summary>
         [HttpGet]
         [HttpHead]
         public async Task<IActionResult> GetEmployeesForCompany(Guid companyId,
@@ -52,7 +54,9 @@ namespace CompanyEmployess.Controllers
             var employeesDto = _mapper.Map<IEnumerable<EmployeeDto>>(employeesFromDb);
             return Ok(_dataShaper.ShapeData(employeesDto, employeeParameters.Fields));
         }
-
+        /// <summary>
+        /// Получает сотрутдника по id
+        /// </summary>
         [HttpGet("{id}", Name = "GetEmployeeForCompany")]
         public IActionResult GetEmployeeForCompany(Guid companyId, Guid id)
         {
@@ -73,7 +77,9 @@ namespace CompanyEmployess.Controllers
             var employee = _mapper.Map<EmployeeDto>(employeeDb);
             return Ok(employee);
         }
-
+        /// <summary>
+        /// Создает сотрутдника для компании
+        /// </summary>
         [HttpPost]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public IActionResult CreateEmployeeForCompany(Guid companyId, [FromBody] EmployeeForCreationDto employee)
@@ -88,7 +94,9 @@ namespace CompanyEmployess.Controllers
                 id = employeeToReturn.Id
             }, employeeToReturn);
         }
-
+        /// <summary>
+        /// Удаляет сотрудника
+        /// </summary>
         [HttpDelete("{id}")]
         [ServiceFilter(typeof(ValidateEmployeeForCompanyExistsAttribute))]
         public async Task<IActionResult> DeleteEmployeeForCompanyAsync(Guid companyId, Guid id)
@@ -98,7 +106,9 @@ namespace CompanyEmployess.Controllers
             _repository.SaveAsync();
             return NoContent();
         }
-
+        /// <summary>
+        /// Обновляет данные о сотрутднике
+        /// </summary>
         [HttpPut("{id}")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         [ServiceFilter(typeof(ValidateEmployeeForCompanyExistsAttribute))]

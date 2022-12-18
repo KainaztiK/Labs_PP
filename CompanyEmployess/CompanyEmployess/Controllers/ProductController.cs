@@ -31,7 +31,9 @@ namespace CompanyEmployess.Controllers
             _mapper = mapper;
             _dataShaper = dataShaper;
         }
-
+        /// <summary>
+        /// Получает список продуктов для клиента
+        /// </summary>
         [HttpGet]
         [HttpHead]
         public async Task<IActionResult> GetProductsForClient(Guid clientId,
@@ -52,7 +54,9 @@ namespace CompanyEmployess.Controllers
             var productsDto = _mapper.Map<IEnumerable<ProductDto>>(productsFromDb);
             return Ok(_dataShaper.ShapeData(productsDto, productParameters.Fields));
         }
-
+        /// <summary>
+        /// Получает продукт по id
+        /// </summary>
         [HttpGet("{id}", Name = "GetProductForClient")]
         public IActionResult GetProductForClient(Guid ClientId, Guid id)
         {
@@ -73,7 +77,9 @@ namespace CompanyEmployess.Controllers
             var Product = _mapper.Map<ProductDto>(ProductDb);
             return Ok(Product);
         }
-
+        /// <summary>
+        /// Создает продукт для клиента
+        /// </summary>
         [HttpPost]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public IActionResult CreateProductForClient(Guid ClientId, [FromBody] ProductForCreationDto Product)
@@ -88,7 +94,9 @@ namespace CompanyEmployess.Controllers
                 id = ProductToReturn.Id
             }, ProductToReturn);
         }
-
+        /// <summary>
+        /// Удаляет продукт
+        /// </summary>
         [HttpDelete("{id}")]
         [ServiceFilter(typeof(ValidateProductForClientExistsAttribute))]
         public async Task<IActionResult> DeleteProductForClientAsync(Guid ClientId, Guid id)
@@ -98,7 +106,9 @@ namespace CompanyEmployess.Controllers
             _repository.SaveAsync();
             return NoContent();
         }
-
+        /// <summary>
+        /// Обновляет данные о продукте
+        /// </summary>
         [HttpPut("{id}")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         [ServiceFilter(typeof(ValidateProductForClientExistsAttribute))]
