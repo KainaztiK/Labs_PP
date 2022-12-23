@@ -34,6 +34,9 @@ namespace CompanyEmployess.Controllers
         /// <summary>
         /// Получает список сотрутдников для компании
         /// </summary>
+        /// <param name="companyId"></param>
+        /// <param name="employeeParameters"></param>
+        /// <returns>Получен список сотрутдников для компании</returns>
         [HttpGet]
         [HttpHead]
         public async Task<IActionResult> GetEmployeesForCompany(Guid companyId,
@@ -57,6 +60,9 @@ namespace CompanyEmployess.Controllers
         /// <summary>
         /// Получает сотрутдника по id
         /// </summary>
+        /// <param name="companyId"></param>
+        /// <param name="id"></param>
+        /// <returns>Получен сотрутдник</returns>
         [HttpGet("{id}", Name = "GetEmployeeForCompany")]
         public IActionResult GetEmployeeForCompany(Guid companyId, Guid id)
         {
@@ -80,6 +86,9 @@ namespace CompanyEmployess.Controllers
         /// <summary>
         /// Создает сотрутдника для компании
         /// </summary>
+        /// <param name="companyId"></param>
+        /// <param name="employee"></param>
+        /// <returns>Создан сотрутдник для компании</returns>
         [HttpPost]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public IActionResult CreateEmployeeForCompany(Guid companyId, [FromBody] EmployeeForCreationDto employee)
@@ -97,6 +106,9 @@ namespace CompanyEmployess.Controllers
         /// <summary>
         /// Удаляет сотрудника
         /// </summary>
+        /// <param name="companyId"></param>
+        /// <param name="id"></param>
+        /// <returns>Сотрудник удален</returns>
         [HttpDelete("{id}")]
         [ServiceFilter(typeof(ValidateEmployeeForCompanyExistsAttribute))]
         public async Task<IActionResult> DeleteEmployeeForCompanyAsync(Guid companyId, Guid id)
@@ -109,6 +121,10 @@ namespace CompanyEmployess.Controllers
         /// <summary>
         /// Обновляет данные о сотрутднике
         /// </summary>
+        /// <param name="companyId"></param>
+        /// <param name="id"></param>
+        /// <param name="employee"></param>
+        /// <returns>Данные о сотруднике обновлены</returns>
         [HttpPut("{id}")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         [ServiceFilter(typeof(ValidateEmployeeForCompanyExistsAttribute))]
@@ -119,7 +135,13 @@ namespace CompanyEmployess.Controllers
             _repository.SaveAsync();
             return NoContent();
         }
-
+        /// <summary>
+        /// Обновляет данные о сотрутднике
+        /// </summary>
+        /// <param name="companyId"></param>
+        /// <param name="id"></param>
+        /// <param name="patchDoc"></param>
+        /// <returns>Данные о сотруднике обновлены</returns>
         [HttpPatch("{id}")]
         [ServiceFilter(typeof(ValidateEmployeeForCompanyExistsAttribute))]
         public IActionResult PartiallyUpdateEmployeeForCompany(Guid companyId, Guid id, [FromBody] JsonPatchDocument<EmployeeForUpdateDto> patchDoc)

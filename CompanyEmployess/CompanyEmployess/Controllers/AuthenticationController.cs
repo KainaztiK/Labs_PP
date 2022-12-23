@@ -25,6 +25,11 @@ namespace CompanyEmployess.Controllers
             _userManager = userManager;
             _authManager = authManager;
         }
+        /// <summary>
+        /// Регистрация пользователя
+        /// </summary>
+        /// <param name="userForRegistration"></param>
+        /// <returns>Пользователь зарегестрирован</returns>
         [HttpPost]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> RegisterUser([FromBody] UserForRegistrationDto
@@ -44,6 +49,11 @@ namespace CompanyEmployess.Controllers
             await _userManager.AddToRolesAsync(user, userForRegistration.Roles);
             return StatusCode(201);
         }
+        /// <summary>
+        /// Вход
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns>Получение токена</returns>
         [HttpPost("login")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> Authenticate([FromBody] UserForAuthenticationDto

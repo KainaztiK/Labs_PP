@@ -14,6 +14,10 @@ namespace CompanyEmployess.Controllers
         {
             _repository = repository;
         }
+        /// <summary>
+        /// Получает список всех компаний
+        /// </summary>
+        /// <returns> Список компаний</returns>
         [HttpGet]
         public async Task<IActionResult> GetCompanies()
         {
