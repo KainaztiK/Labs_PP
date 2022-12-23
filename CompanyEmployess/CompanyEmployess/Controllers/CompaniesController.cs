@@ -29,6 +29,10 @@ logger, IMapper mapper)
             _logger = logger;
             _mapper = mapper;
         }
+        /// <summary>
+        /// Опции контроллера
+        /// </summary>
+        /// <returns>Получена информация о опциях контроллера</returns>
         [HttpOptions]
         public IActionResult GetCompaniesOptions()
         {
@@ -39,7 +43,7 @@ logger, IMapper mapper)
         /// <summary>
         /// Получает список всех компаний
         /// </summary>
-        /// <returns> Список компаний</returns>.
+        /// <returns> Список компаний</returns>
         [HttpGet(Name = "GetCompanies"), Authorize(Roles = "Manager")]
         public async Task<IActionResult> GetCompanies()
         {
@@ -50,6 +54,8 @@ logger, IMapper mapper)
         /// <summary>
         /// Получает компанию по id
         /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Получена компания</returns>
         [HttpGet("{id}", Name = "CompanyById")]
         public async Task<IActionResult> GetCompany(Guid id)
         {
@@ -69,10 +75,10 @@ logger, IMapper mapper)
         /// <summary>
         /// Создает вновь созданную компанию
         /// </summary>
-        /// <param name="company"></param>.
-        /// <response code="201"> Возвращает только что созданный элемент</response>.
-        /// <response code="400"> Если элемент равен null</response>.
-        /// <код ответа="422"> Если модель недействительна</ответ>.
+        /// <param name="company"></param>
+        /// <response code="201"> Возвращает только что созданный элемент</response>
+        /// <response code="400"> Если элемент равен null</response>
+        /// <код ответа="422"> Если модель недействительна</код>
         [HttpPost(Name = "CreateCompany")]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
@@ -90,6 +96,8 @@ logger, IMapper mapper)
         /// <summary>
         /// Получает коллекцию компаний
         /// </summary>
+        /// <param name="ids"></param>
+        /// <returns>Получена коллекция компаний</returns>
         [HttpGet("collection/({ids})", Name = "CompanyCollection")]
         public async Task<IActionResult> GetCompanyCollection(
         [ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
@@ -114,6 +122,8 @@ logger, IMapper mapper)
         /// <summary>
         /// Создает коллекцию компаний
         /// </summary>
+        /// <param name="companyCollection"></param>
+        /// <returns>Создана коллекция компаний</returns>
         [HttpPost("collection")]
         public async Task<IActionResult> CreateCompanyCollection(
         [FromBody] IEnumerable<CompanyForCreationDto> companyCollection)
@@ -138,6 +148,8 @@ logger, IMapper mapper)
         /// <summary>
         /// Удаляет данные компании по id
         /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Данные компании удалены</returns>
         [HttpDelete("{id}")]
         [ServiceFilter(typeof(ValidateCompanyExistsAttribute))]
         public async Task<IActionResult> DeleteCompany(Guid id)
@@ -150,6 +162,9 @@ logger, IMapper mapper)
         /// <summary>
         /// Обновляет данные компании по id
         /// </summary>
+        /// <param name="id"></param>
+        /// <param name="company"></param>
+        /// <returns>Данные компании обновлены</returns>
         [HttpPut("{id}")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         [ServiceFilter(typeof(ValidateCompanyExistsAttribute))]

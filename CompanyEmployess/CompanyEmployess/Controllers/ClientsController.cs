@@ -28,6 +28,10 @@ logger, IMapper mapper)
             _logger = logger;
             _mapper = mapper;
         }
+        /// <summary>
+        /// Опции контроллера
+        /// </summary>
+        /// <returns>Получена информация о опциях контроллера</returns>
         [HttpOptions]
         public IActionResult GetClientsOptions()
         {
@@ -35,8 +39,9 @@ logger, IMapper mapper)
             return Ok();
         }
         /// <summary>
-        /// Получает список всех клиентов
+        ///Получает список всех клиентов
         /// </summary>
+        /// <returns>Получен список всех клиентов</returns>
         [HttpGet]
         public async Task<IActionResult> GetClients()
         {
@@ -47,6 +52,8 @@ logger, IMapper mapper)
         /// <summary>
         /// Получает информацию клиента по id
         /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Получена информация клиента по id</returns>
         [HttpGet("{id}", Name = "ClientById")]
         public async Task<IActionResult> GetClient(Guid id)
         {
@@ -66,6 +73,8 @@ logger, IMapper mapper)
         /// <summary>
         /// Создает клиента
         /// </summary>
+        /// <param name="Client"></param>
+        /// <returns>Клиент создан</returns>
         [HttpPost]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateClient([FromBody] ClientForCreationDto Client)
@@ -80,6 +89,8 @@ logger, IMapper mapper)
         /// <summary>
         /// Получает коллекцию клиентов
         /// </summary>
+        /// <param name="ids"></param>
+        /// <returns>Получена коллекция клиентов</returns>
         [HttpGet("collection/({ids})", Name = "ClientCollection")]
         public async Task<IActionResult> GetClientCollection(
         [ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
@@ -104,6 +115,8 @@ logger, IMapper mapper)
         /// <summary>
         /// Создает коллекцию клиентов
         /// </summary>
+        /// <param name="ClientCollection"></param>
+        /// <returns>Создана коллекция клиентов</returns>
         [HttpPost("collection")]
         public async Task<IActionResult> CreateClientCollection(
         [FromBody] IEnumerable<ClientForCreationDto> ClientCollection)
@@ -128,6 +141,8 @@ logger, IMapper mapper)
         /// <summary>
         /// Удаляет клиента по id
         /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Клиент удален</returns>
         [HttpDelete("{id}")]
         [ServiceFilter(typeof(ValidateClientExistsAttribute))]
         public async Task<IActionResult> DeleteClient(Guid id)
@@ -140,6 +155,9 @@ logger, IMapper mapper)
         /// <summary>
         /// Обновляет данные клиента по id
         /// </summary>
+        /// <param name="id"></param>
+        /// <param name="Client"></param>
+        /// <returns>Клиент обновлен</returns>
         [HttpPut("{id}")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         [ServiceFilter(typeof(ValidateClientExistsAttribute))]

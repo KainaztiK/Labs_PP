@@ -34,6 +34,9 @@ namespace CompanyEmployess.Controllers
         /// <summary>
         /// Получает список продуктов для клиента
         /// </summary>
+        /// <param name="clientId"></param>
+        /// <param name="productParameters"></param>
+        /// <returns>Получен список продуктов для клиента</returns>
         [HttpGet]
         [HttpHead]
         public async Task<IActionResult> GetProductsForClient(Guid clientId,
@@ -57,6 +60,9 @@ namespace CompanyEmployess.Controllers
         /// <summary>
         /// Получает продукт по id
         /// </summary>
+        /// <param name="ClientId"></param>
+        /// <param name="id"></param>
+        /// <returns>Получен продукт</returns>
         [HttpGet("{id}", Name = "GetProductForClient")]
         public IActionResult GetProductForClient(Guid ClientId, Guid id)
         {
@@ -80,6 +86,9 @@ namespace CompanyEmployess.Controllers
         /// <summary>
         /// Создает продукт для клиента
         /// </summary>
+        /// <param name="ClientId"></param>
+        /// <param name="Product"></param>
+        /// <returns>Продукт создан</returns>
         [HttpPost]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public IActionResult CreateProductForClient(Guid ClientId, [FromBody] ProductForCreationDto Product)
@@ -97,6 +106,9 @@ namespace CompanyEmployess.Controllers
         /// <summary>
         /// Удаляет продукт
         /// </summary>
+        /// <param name="ClientId"></param>
+        /// <param name="id"></param>
+        /// <returns>Продукт удален</returns>
         [HttpDelete("{id}")]
         [ServiceFilter(typeof(ValidateProductForClientExistsAttribute))]
         public async Task<IActionResult> DeleteProductForClientAsync(Guid ClientId, Guid id)
@@ -109,6 +121,10 @@ namespace CompanyEmployess.Controllers
         /// <summary>
         /// Обновляет данные о продукте
         /// </summary>
+        /// <param name="ClientId"></param>
+        /// <param name="id"></param>
+        /// <param name="Product"></param>
+        /// <returns>Данные о продукте обновлены</returns>
         [HttpPut("{id}")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         [ServiceFilter(typeof(ValidateProductForClientExistsAttribute))]
@@ -119,7 +135,13 @@ namespace CompanyEmployess.Controllers
             _repository.SaveAsync();
             return NoContent();
         }
-
+        /// <summary>
+        /// Обновляет данные о продукте
+        /// </summary>
+        /// <param name="ClientId"></param>
+        /// <param name="id"></param>
+        /// <param name="patchDoc"></param>
+        /// <returns>Данные о продукте обновлены</returns>
         [HttpPatch("{id}")]
         [ServiceFilter(typeof(ValidateProductForClientExistsAttribute))]
         public IActionResult PartiallyUpdateProductForClient(Guid ClientId, Guid id, [FromBody] JsonPatchDocument<ProductForUpdateDto> patchDoc)
